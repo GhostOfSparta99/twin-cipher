@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Upload, Image as ImageIcon, FileText, Lock, Key } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Upload, Image as ImageIcon, FileText, Lock, Key, AlertTriangle, HardDrive } from 'lucide-react';
 import { encryptData, uint8ArrayToBase64 } from '../lib/crypto';
 import { embedDataInImage } from '../lib/steganography';
 import { supabase } from '../lib/supabase';
@@ -16,6 +16,48 @@ export default function Embed() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
+  // Capacity State
+  const [capacity, setCapacity] = useState({ total: 0, used: 0, percent: 0 });
+
+  // Effect: Recalculate capacity whenever files change
+  useEffect(() => {
+    calculateCapacity();
+  }, [coverImage, secretFile, decoyFile]);
+
+  const calculateCapacity = async () => {
+    if (!coverImage) {
+      setCapacity({ total: 0, used: 0, percent: 0 });
+      return;
+    }
+
+    // 1. Calculate Total Capacity from Image Dimensions
+    // Formula: (Width * Height * 3 channels) / 8 bits = Max Bytes
+    const img = new Image();
+    img.src = URL.createObjectURL(coverImage);
+    await img.decode();
+
+    // We use 3 bits per pixel (RGB)
+    const totalBytes = Math.floor((img.width * img.height * 3) / 8);
+
+    // 2. Calculate Used Space
+    // Header overhead is approx 100-150 bytes (UUID + filenames + sizes)
+    const overhead = 150;
+    const secretSize = secretFile ? secretFile.size : 0;
+    const decoySize = decoyFile ? decoyFile.size : 0;
+    const usedBytes = overhead + secretSize + decoySize;
+
+    const percent = (usedBytes / totalBytes) * 100;
+    setCapacity({ total: totalBytes, used: usedBytes, percent });
+  };
+
+  const formatBytes = (bytes: number) => {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
   const handleEmbed = async () => {
     if (!coverImage || !secretFile || !decoyFile || !realPassword || !duressPassword) {
       setError('Please fill in all fields');
@@ -23,6 +65,10 @@ export default function Embed() {
     }
     if (realPassword === duressPassword) {
       setError('Real and duress passwords must be different');
+      return;
+    }
+    if (capacity.percent > 100) {
+      setError('Files are too large for this image! Use the Tools tab to compress them.');
       return;
     }
 
@@ -33,20 +79,15 @@ export default function Embed() {
     try {
       const secretData = await secretFile.arrayBuffer();
       const decoyData = await decoyFile.arrayBuffer();
-
-      // 1. Generate unique ID for this transaction
       const imageId = crypto.randomUUID();
 
-      // 2. Encrypt Files
       const { encrypted: encReal, salt: realSalt, iv: realIv } = await encryptData(secretData, realPassword);
       const { encrypted: encDecoy, salt: duressSalt, iv: duressIv } = await encryptData(decoyData, duressPassword);
 
-      // 3. Embed Data (Includes the imageId now!)
       const stegoBlob = await embedDataInImage(
         coverImage, encReal, encDecoy, secretFile.name, decoyFile.name, imageId
       );
 
-      // 4. Upload & Save Metadata
       const filename = `stego_${Date.now()}.png`;
       const storagePath = `${user!.id}/${filename}`;
 
@@ -54,7 +95,7 @@ export default function Embed() {
       if (uploadError) throw uploadError;
 
       const { error: dbError } = await supabase.from('stego_images').insert({
-        id: imageId, // Explicitly set the ID we generated
+        id: imageId,
         user_id: user!.id,
         filename,
         original_filename: coverImage.name,
@@ -71,6 +112,7 @@ export default function Embed() {
       setSuccess(true);
       setCoverImage(null); setSecretFile(null); setDecoyFile(null);
       setRealPassword(''); setDuressPassword('');
+      setCapacity({ total: 0, used: 0, percent: 0 });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Embedding failed');
     } finally {
@@ -86,6 +128,38 @@ export default function Embed() {
           Hide Files in Image
         </h2>
 
+        {/* --- NEW: CAPACITY METER --- */}
+        {coverImage && (
+          <div className="mb-8 bg-slate-900/50 p-4 rounded-xl border border-slate-700">
+            <div className="flex justify-between text-sm mb-2">
+              <span className="text-slate-300 flex items-center gap-2">
+                <HardDrive className="w-4 h-4 text-cyan-400" />
+                Storage Capacity
+              </span>
+              <span className={capacity.percent > 100 ? "text-red-400 font-bold" : "text-slate-400"}>
+                {formatBytes(capacity.used)} / {formatBytes(capacity.total)}
+              </span>
+            </div>
+
+            {/* Progress Bar */}
+            <div className="w-full h-3 bg-slate-700 rounded-full overflow-hidden">
+              <div
+                className={`h-full transition-all duration-500 ease-out ${capacity.percent > 100 ? 'bg-red-500' :
+                    capacity.percent > 80 ? 'bg-amber-500' : 'bg-cyan-500'
+                  }`}
+                style={{ width: `${Math.min(capacity.percent, 100)}%` }}
+              />
+            </div>
+
+            {capacity.percent > 100 && (
+              <div className="mt-2 flex items-center gap-2 text-xs text-red-400">
+                <AlertTriangle className="w-4 h-4" />
+                <span>Capacity exceeded! Please use a larger image or compress your files in the <b>Tools</b> tab.</span>
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-3">
@@ -96,11 +170,8 @@ export default function Embed() {
               type="file"
               accept="image/png"
               onChange={(e) => setCoverImage(e.target.files?.[0] || null)}
-              className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-600 file:text-white hover:file:bg-blue-700 file:cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white file:bg-blue-600 file:text-white file:border-0 file:px-4 file:py-2 file:rounded-lg cursor-pointer"
             />
-            {coverImage && (
-              <p className="mt-2 text-sm text-slate-400">{coverImage.name}</p>
-            )}
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
@@ -112,11 +183,8 @@ export default function Embed() {
               <input
                 type="file"
                 onChange={(e) => setSecretFile(e.target.files?.[0] || null)}
-                className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-green-600 file:text-white hover:file:bg-green-700 file:cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-600"
+                className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white file:bg-green-600 file:text-white file:border-0 file:px-4 file:py-2 file:rounded-lg cursor-pointer"
               />
-              {secretFile && (
-                <p className="mt-2 text-sm text-slate-400">{secretFile.name}</p>
-              )}
             </div>
 
             <div>
@@ -127,11 +195,8 @@ export default function Embed() {
               <input
                 type="file"
                 onChange={(e) => setDecoyFile(e.target.files?.[0] || null)}
-                className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-amber-600 file:text-white hover:file:bg-amber-700 file:cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-600"
+                className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white file:bg-amber-600 file:text-white file:border-0 file:px-4 file:py-2 file:rounded-lg cursor-pointer"
               />
-              {decoyFile && (
-                <p className="mt-2 text-sm text-slate-400">{decoyFile.name}</p>
-              )}
             </div>
           </div>
 
@@ -145,7 +210,7 @@ export default function Embed() {
                 type="password"
                 value={realPassword}
                 onChange={(e) => setRealPassword(e.target.value)}
-                className="w-full px-4 py-3 bg-slate-900/50 border border-green-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-green-600"
+                className="w-full px-4 py-3 bg-slate-900/50 border border-green-600 rounded-lg text-white"
                 placeholder="Password for secret file"
               />
             </div>
@@ -159,7 +224,7 @@ export default function Embed() {
                 type="password"
                 value={duressPassword}
                 onChange={(e) => setDuressPassword(e.target.value)}
-                className="w-full px-4 py-3 bg-slate-900/50 border border-amber-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-600"
+                className="w-full px-4 py-3 bg-slate-900/50 border border-amber-600 rounded-lg text-white"
                 placeholder="Password for decoy file"
               />
             </div>
@@ -174,8 +239,7 @@ export default function Embed() {
           {success && (
             <div className="bg-green-500/10 border border-green-500/50 rounded-lg p-4">
               <p className="text-green-400">
-                Files successfully embedded! Check your vault to download the stego
-                image.
+                Files successfully embedded! Check your vault.
               </p>
             </div>
           )}
@@ -183,23 +247,11 @@ export default function Embed() {
           <button
             onClick={handleEmbed}
             disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-4 px-6 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-4 px-6 rounded-lg transition-all disabled:opacity-50 shadow-lg hover:shadow-xl"
           >
             {loading ? 'Embedding...' : 'Embed Files'}
           </button>
         </div>
-      </div>
-
-      <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4">
-        <h3 className="text-sm font-semibold text-blue-400 mb-2">
-          How it works
-        </h3>
-        <ul className="text-xs text-slate-400 space-y-1">
-          <li>• Your secret and decoy files are encrypted separately in your browser</li>
-          <li>• Both encrypted files are hidden in the cover image using LSB steganography</li>
-          <li>• Real password reveals your secret file, duress password reveals the decoy</li>
-          <li>• No one can tell which password you used or that multiple files exist</li>
-        </ul>
       </div>
     </div>
   );
