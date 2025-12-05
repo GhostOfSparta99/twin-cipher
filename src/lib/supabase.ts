@@ -20,6 +20,7 @@ export type StegoImage = {
   real_iv: string;
   duress_salt: string;
   duress_iv: string;
+  allowed_emails: string[]; // New field for access control
   created_at: string;
   updated_at: string;
 };
