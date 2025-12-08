@@ -58,9 +58,9 @@ export default function Extract() {
   };
 
   return (
-    <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6 space-y-8">
-      <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-        <Unlock className="w-6 h-6 text-blue-400" /> Extract Hidden Files
+    <div className="bg-white dark:bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-slate-700 p-6 space-y-8 shadow-sm transition-colors duration-300">
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+        <Unlock className="w-6 h-6 text-blue-500 dark:text-blue-400" /> Extract Hidden Files
       </h2>
 
       <div className="space-y-6">
@@ -73,20 +73,20 @@ export default function Extract() {
         />
 
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2"><Key className="inline w-4 h-4 mr-2" />Password</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2"><Key className="inline w-4 h-4 mr-2" />Password</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white outline-none focus:ring-2 focus:ring-blue-600"
+            className="w-full px-4 py-3.5 rounded-xl outline-none transition-all duration-300 bg-slate-50 border-slate-200 text-slate-800 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 dark:bg-slate-900/50 dark:border-slate-600 dark:text-white dark:focus:ring-blue-500/20 placeholder-gray-400 dark:placeholder-slate-500"
             placeholder="Enter Real or Duress password"
           />
         </div>
 
-        {error && <div className="p-4 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm flex items-center gap-2"><ShieldAlert className="w-4 h-4" /> {error}</div>}
+        {error && <div className="p-4 bg-red-500/10 border border-red-500/50 rounded-lg text-red-600 dark:text-red-400 text-sm flex items-center gap-2"><ShieldAlert className="w-4 h-4" /> {error}</div>}
 
         {extractedFile && (
-          <div className={`p-4 rounded-lg border flex items-center gap-3 ${extractedFile.type === 'real' ? 'bg-green-500/10 border-green-500/50 text-green-400' : 'bg-amber-500/10 border-amber-500/50 text-amber-400'}`}>
+          <div className={`p-4 rounded-lg border flex items-center gap-3 ${extractedFile.type === 'real' ? 'bg-green-500/10 border-green-500/50 text-green-600 dark:text-green-400' : 'bg-amber-500/10 border-amber-500/50 text-amber-600 dark:text-amber-400'}`}>
             <CheckCircle className="w-5 h-5" />
             <div>
               <p className="font-bold">Unlocked {extractedFile.type === 'real' ? 'Secret' : 'Decoy'} File</p>

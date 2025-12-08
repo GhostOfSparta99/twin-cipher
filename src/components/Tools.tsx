@@ -77,26 +77,26 @@ export default function Tools() {
         <div className="grid md:grid-cols-2 gap-6">
 
             {/* Decoy Generator Card */}
-            <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6">
+            <div className="bg-white dark:bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-slate-700 p-6 shadow-sm transition-colors duration-300">
                 <div className="flex items-center gap-3 mb-4">
                     <div className="p-3 bg-purple-500/10 rounded-lg">
-                        <FileCode className="w-6 h-6 text-purple-400" />
+                        <FileCode className="w-6 h-6 text-purple-500 dark:text-purple-400" />
                     </div>
                     <div>
-                        <h2 className="text-xl font-bold text-white">Decoy Generator</h2>
-                        <p className="text-xs text-slate-400">Create fake files for plausible deniability</p>
+                        <h2 className="text-xl font-bold text-gray-900 dark:text-white">Decoy Generator</h2>
+                        <p className="text-xs text-gray-500 dark:text-slate-400">Create fake files for plausible deniability</p>
                     </div>
                 </div>
 
                 <div className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-2">File Type</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">File Type</label>
                         <div className="grid grid-cols-2 gap-2">
                             <button
                                 onClick={() => setDecoyType('text')}
                                 className={`p-2 rounded-lg border text-sm flex items-center justify-center gap-2 transition-all ${decoyType === 'text'
-                                        ? 'bg-purple-600 border-purple-500 text-white'
-                                        : 'bg-slate-900/50 border-slate-600 text-slate-400 hover:border-slate-500'
+                                    ? 'bg-purple-600 border-purple-500 text-white'
+                                    : 'bg-gray-100 dark:bg-slate-900/50 border-gray-200 dark:border-slate-600 text-gray-600 dark:text-slate-400 hover:border-gray-400 dark:hover:border-slate-500'
                                     }`}
                             >
                                 <FileText className="w-4 h-4" /> Text Doc
@@ -104,8 +104,8 @@ export default function Tools() {
                             <button
                                 onClick={() => setDecoyType('binary')}
                                 className={`p-2 rounded-lg border text-sm flex items-center justify-center gap-2 transition-all ${decoyType === 'binary'
-                                        ? 'bg-purple-600 border-purple-500 text-white'
-                                        : 'bg-slate-900/50 border-slate-600 text-slate-400 hover:border-slate-500'
+                                    ? 'bg-purple-600 border-purple-500 text-white'
+                                    : 'bg-gray-100 dark:bg-slate-900/50 border-gray-200 dark:border-slate-600 text-gray-600 dark:text-slate-400 hover:border-gray-400 dark:hover:border-slate-500'
                                     }`}
                             >
                                 <Binary className="w-4 h-4" /> Random Data
@@ -114,7 +114,7 @@ export default function Tools() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
                             Target Size: {Math.round(decoySize / 1024)} KB
                         </label>
                         <input
@@ -124,14 +124,14 @@ export default function Tools() {
                             step="1024"
                             value={decoySize}
                             onChange={(e) => setDecoySize(Number(e.target.value))}
-                            className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-purple-500"
+                            className="w-full h-2 bg-gray-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-purple-500"
                         />
                     </div>
 
                     <button
                         onClick={handleGenerateDecoy}
                         disabled={isGenerating}
-                        className="w-full py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2"
+                        className="w-full py-3 bg-gray-200 dark:bg-slate-700 hover:bg-gray-300 dark:hover:bg-slate-600 text-gray-900 dark:text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2"
                     >
                         {isGenerating ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
                         Generate Decoy
@@ -140,19 +140,19 @@ export default function Tools() {
             </div>
 
             {/* File Compressor Card */}
-            <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6">
+            <div className="bg-white dark:bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-slate-700 p-6 shadow-sm transition-colors duration-300">
                 <div className="flex items-center gap-3 mb-4">
                     <div className="p-3 bg-cyan-500/10 rounded-lg">
-                        <Minimize2 className="w-6 h-6 text-cyan-400" />
+                        <Minimize2 className="w-6 h-6 text-cyan-500 dark:text-cyan-400" />
                     </div>
                     <div>
-                        <h2 className="text-xl font-bold text-white">File Compressor</h2>
-                        <p className="text-xs text-slate-400">Shrink files before hiding them</p>
+                        <h2 className="text-xl font-bold text-gray-900 dark:text-white">File Compressor</h2>
+                        <p className="text-xs text-gray-500 dark:text-slate-400">Shrink files before hiding them</p>
                     </div>
                 </div>
 
                 <div className="space-y-4">
-                    <div className="border-2 border-dashed border-slate-600 rounded-lg p-8 text-center hover:border-cyan-500 transition-colors">
+                    <div className="border-2 border-dashed border-gray-300 dark:border-slate-600 rounded-lg p-8 text-center hover:border-cyan-500 transition-colors">
                         <input
                             type="file"
                             onChange={(e) => setFileToCompress(e.target.files?.[0] || null)}
@@ -160,8 +160,8 @@ export default function Tools() {
                             id="compress-upload"
                         />
                         <label htmlFor="compress-upload" className="cursor-pointer flex flex-col items-center">
-                            <Archive className="w-8 h-8 text-slate-500 mb-2" />
-                            <span className="text-sm text-slate-300">
+                            <Archive className="w-8 h-8 text-gray-400 dark:text-slate-500 mb-2" />
+                            <span className="text-sm text-gray-600 dark:text-slate-300">
                                 {fileToCompress ? fileToCompress.name : 'Click to upload file'}
                             </span>
                         </label>

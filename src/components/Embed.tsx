@@ -127,24 +127,24 @@ export default function Embed() {
   };
 
   return (
-    <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6 space-y-8">
-      <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-        <Upload className="w-6 h-6 text-blue-400" /> Hide Files in Image
+    <div className="bg-white dark:bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-slate-700 p-6 space-y-8 shadow-sm transition-colors duration-300">
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+        <Upload className="w-6 h-6 text-blue-500 dark:text-blue-400" /> Hide Files in Image
       </h2>
 
       {/* Capacity Meter */}
       {coverImage && (
-        <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-700">
-          <div className="flex justify-between text-sm mb-2 text-slate-400">
-            <span><HardDrive className="inline w-4 h-4 mr-2 text-cyan-400" />Capacity</span>
-            <span className={capacity.percent > 100 ? "text-red-400" : "text-slate-300"}>
+        <div className="bg-gray-50 dark:bg-slate-900/50 p-4 rounded-xl border border-gray-200 dark:border-slate-700">
+          <div className="flex justify-between text-sm mb-2 text-gray-600 dark:text-slate-400">
+            <span><HardDrive className="inline w-4 h-4 mr-2 text-cyan-500 dark:text-cyan-400" />Capacity</span>
+            <span className={capacity.percent > 100 ? "text-red-500 dark:text-red-400" : "text-gray-700 dark:text-slate-300"}>
               {formatBytes(capacity.used)} / {formatBytes(capacity.total)}
             </span>
           </div>
-          <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
+          <div className="w-full h-2 bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden">
             <div className={`h-full transition-all duration-500 ${capacity.percent > 100 ? 'bg-red-500' : 'bg-cyan-500'}`} style={{ width: `${Math.min(capacity.percent, 100)}%` }} />
           </div>
-          {capacity.percent > 100 && <p className="text-xs text-red-400 mt-2 flex items-center"><AlertTriangle className="w-3 h-3 mr-1" /> Image too small!</p>}
+          {capacity.percent > 100 && <p className="text-xs text-red-500 dark:text-red-400 mt-2 flex items-center"><AlertTriangle className="w-3 h-3 mr-1" /> Image too small!</p>}
         </div>
       )}
 
@@ -154,15 +154,15 @@ export default function Embed() {
 
         {/* NEW: Custom Filename Input */}
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">
-            <FileOutput className="inline w-4 h-4 mr-2 text-blue-400" />
+          <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+            <FileOutput className="inline w-4 h-4 mr-2 text-blue-500 dark:text-blue-400" />
             Output Filename (Optional)
           </label>
           <input
             type="text"
             value={customName}
             onChange={(e) => setCustomName(e.target.value)}
-            className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white outline-none focus:ring-2 focus:ring-blue-600 placeholder-slate-600"
+            className="w-full px-4 py-3.5 rounded-xl outline-none transition-all duration-300 bg-slate-50 border-slate-200 text-slate-800 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 dark:bg-slate-900/50 dark:border-slate-600 dark:text-white dark:focus:ring-blue-500/20 placeholder-gray-400 dark:placeholder-slate-600"
             placeholder="e.g., vacation_photo_2024"
           />
         </div>
@@ -177,25 +177,25 @@ export default function Embed() {
       <div className="grid md:grid-cols-2 gap-6">
         <div>
           <div className="flex justify-between items-end mb-2">
-            <label className="block text-sm font-medium text-slate-300"><Key className="inline w-4 h-4 mr-2 text-green-400" />Real Password</label>
-            <button onClick={() => setRealPassword(generatePassword())} className="text-[10px] text-blue-400 hover:text-blue-300 flex items-center gap-1 bg-slate-900 px-2 py-1 rounded border border-slate-700 hover:border-blue-500 transition-all"><Wand2 className="w-3 h-3" /> Suggest</button>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300"><Key className="inline w-4 h-4 mr-2 text-green-500 dark:text-green-400" />Real Password</label>
+            <button onClick={() => setRealPassword(generatePassword())} className="text-[10px] text-blue-500 dark:text-blue-400 hover:text-blue-600 dark:hover:text-blue-300 flex items-center gap-1 bg-gray-100 dark:bg-slate-900 px-2 py-1 rounded border border-gray-200 dark:border-slate-700 hover:border-blue-500 transition-all"><Wand2 className="w-3 h-3" /> Suggest</button>
           </div>
-          <input type="text" value={realPassword} onChange={(e) => setRealPassword(e.target.value)} className="w-full px-4 py-3 bg-slate-900/50 border border-green-900/50 focus:border-green-500 rounded-lg text-white outline-none transition-all" placeholder="Protects secret file" />
+          <input type="text" value={realPassword} onChange={(e) => setRealPassword(e.target.value)} className="w-full px-4 py-3.5 rounded-xl outline-none transition-all duration-300 bg-slate-50 border-slate-200 text-slate-800 focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-green-500/10 dark:bg-slate-900/50 dark:border-slate-600 dark:text-white dark:focus:ring-green-500/20 placeholder-gray-400 dark:placeholder-slate-500" placeholder="Protects secret file" />
           <StrengthBar password={realPassword} />
         </div>
 
         <div>
           <div className="flex justify-between items-end mb-2">
-            <label className="block text-sm font-medium text-slate-300"><Key className="inline w-4 h-4 mr-2 text-amber-400" />Duress Password</label>
-            <button onClick={() => setDuressPassword(generatePassword())} className="text-[10px] text-blue-400 hover:text-blue-300 flex items-center gap-1 bg-slate-900 px-2 py-1 rounded border border-slate-700 hover:border-blue-500 transition-all"><Wand2 className="w-3 h-3" /> Suggest</button>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300"><Key className="inline w-4 h-4 mr-2 text-amber-500 dark:text-amber-400" />Duress Password</label>
+            <button onClick={() => setDuressPassword(generatePassword())} className="text-[10px] text-blue-500 dark:text-blue-400 hover:text-blue-600 dark:hover:text-blue-300 flex items-center gap-1 bg-gray-100 dark:bg-slate-900 px-2 py-1 rounded border border-gray-200 dark:border-slate-700 hover:border-blue-500 transition-all"><Wand2 className="w-3 h-3" /> Suggest</button>
           </div>
-          <input type="text" value={duressPassword} onChange={(e) => setDuressPassword(e.target.value)} className="w-full px-4 py-3 bg-slate-900/50 border border-amber-900/50 focus:border-amber-500 rounded-lg text-white outline-none transition-all" placeholder="Protects decoy file" />
+          <input type="text" value={duressPassword} onChange={(e) => setDuressPassword(e.target.value)} className="w-full px-4 py-3.5 rounded-xl outline-none transition-all duration-300 bg-slate-50 border-slate-200 text-slate-800 focus:bg-white focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 dark:bg-slate-900/50 dark:border-slate-600 dark:text-white dark:focus:ring-amber-500/20 placeholder-gray-400 dark:placeholder-slate-500" placeholder="Protects decoy file" />
           <StrengthBar password={duressPassword} />
         </div>
       </div>
 
-      {error && <div className="p-4 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm">{error}</div>}
-      {success && <div className="p-4 bg-green-500/10 border border-green-500/50 rounded-lg text-green-400 text-sm">Success! File saved to Vault.</div>}
+      {error && <div className="p-4 bg-red-500/10 border border-red-500/50 rounded-lg text-red-600 dark:text-red-400 text-sm">{error}</div>}
+      {success && <div className="p-4 bg-green-500/10 border border-green-500/50 rounded-lg text-green-600 dark:text-green-400 text-sm">Success! File saved to Vault.</div>}
 
       <button onClick={handleEmbed} disabled={loading} className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg transition-all disabled:opacity-50">
         {loading ? 'Processing...' : 'Secure & Embed Files'}

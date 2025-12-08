@@ -94,21 +94,21 @@ export default function Vault() {
 
       {/* Header with Tabs */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-          <ImageIcon className="w-6 h-6 text-blue-400" /> Vault
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+          <ImageIcon className="w-6 h-6 text-blue-500 dark:text-blue-400" /> Vault
         </h2>
 
-        <div className="flex bg-slate-800/50 p-1 rounded-lg border border-slate-700">
+        <div className="flex bg-gray-100 dark:bg-slate-800/50 p-1 rounded-lg border border-gray-200 dark:border-slate-700">
           <button
             onClick={() => setActiveTab('mine')}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${activeTab === 'mine' ? 'bg-blue-600 text-white shadow' : 'text-slate-400 hover:text-white'
+            className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${activeTab === 'mine' ? 'bg-blue-600 text-white shadow' : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white'
               }`}
           >
             My Files ({myImages.length})
           </button>
           <button
             onClick={() => setActiveTab('shared')}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${activeTab === 'shared' ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-white'
+            className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${activeTab === 'shared' ? 'bg-indigo-600 text-white shadow' : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white'
               }`}
           >
             Shared with Me ({sharedImages.length})
@@ -117,17 +117,17 @@ export default function Vault() {
       </div>
 
       {imagesToShow.length === 0 ? (
-        <div className="text-center py-12 bg-slate-800/30 rounded-2xl border border-slate-700/50 border-dashed">
-          <p className="text-slate-500">No images found in this section.</p>
+        <div className="text-center py-12 bg-gray-50 dark:bg-slate-800/30 rounded-2xl border border-dashed border-gray-300 dark:border-slate-700/50">
+          <p className="text-gray-500 dark:text-slate-500">No images found in this section.</p>
         </div>
       ) : (
         <div className="grid gap-6">
           {imagesToShow.map((image) => (
-            <div key={image.id} className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6 hover:border-slate-600 transition-all">
+            <div key={image.id} className="bg-white dark:bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-slate-700 p-6 hover:border-gray-300 dark:hover:border-slate-600 transition-all shadow-sm">
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-1">{image.filename}</h3>
-                  <div className="flex gap-4 text-sm text-slate-400">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">{image.filename}</h3>
+                  <div className="flex gap-4 text-sm text-gray-500 dark:text-slate-400">
                     <span className="flex items-center gap-1"><HardDrive className="w-3 h-3" /> {(image.file_size / 1024).toFixed(1)} KB</span>
                     <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {new Date(image.created_at).toLocaleDateString()}</span>
                   </div>
@@ -152,25 +152,25 @@ export default function Vault() {
               </div>
 
               {/* Shared Metadata View */}
-              <div className="bg-slate-900/50 rounded-lg p-3 border border-slate-700/50">
+              <div className="bg-gray-50 dark:bg-slate-900/50 rounded-lg p-3 border border-gray-200 dark:border-slate-700/50">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Decryption Keys</span>
-                  <button onClick={() => setShowSalts(prev => ({ ...prev, [image.id]: !prev[image.id] }))} className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1">
+                  <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Decryption Keys</span>
+                  <button onClick={() => setShowSalts(prev => ({ ...prev, [image.id]: !prev[image.id] }))} className="text-xs text-blue-500 dark:text-blue-400 hover:text-blue-600 dark:hover:text-blue-300 flex items-center gap-1">
                     {showSalts[image.id] ? <><EyeOff className="w-3 h-3" /> Hide</> : <><Eye className="w-3 h-3" /> Reveal</>}
                   </button>
                 </div>
 
                 {showSalts[image.id] && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2 text-[10px] font-mono text-slate-400">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2 text-[10px] font-mono text-gray-600 dark:text-slate-400">
                     <div>
-                      <p className="text-green-500 font-bold mb-1">Real File</p>
-                      <div className="bg-slate-950 p-2 rounded break-all">S: {image.real_salt}</div>
-                      <div className="bg-slate-950 p-2 rounded break-all mt-1">IV: {image.real_iv}</div>
+                      <p className="text-green-600 dark:text-green-500 font-bold mb-1">Real File</p>
+                      <div className="bg-gray-100 dark:bg-slate-950 p-2 rounded break-all border border-gray-200 dark:border-transparent">S: {image.real_salt}</div>
+                      <div className="bg-gray-100 dark:bg-slate-950 p-2 rounded break-all mt-1 border border-gray-200 dark:border-transparent">IV: {image.real_iv}</div>
                     </div>
                     <div>
-                      <p className="text-amber-500 font-bold mb-1">Duress File</p>
-                      <div className="bg-slate-950 p-2 rounded break-all">S: {image.duress_salt}</div>
-                      <div className="bg-slate-950 p-2 rounded break-all mt-1">IV: {image.duress_iv}</div>
+                      <p className="text-amber-600 dark:text-amber-500 font-bold mb-1">Duress File</p>
+                      <div className="bg-gray-100 dark:bg-slate-950 p-2 rounded break-all border border-gray-200 dark:border-transparent">S: {image.duress_salt}</div>
+                      <div className="bg-gray-100 dark:bg-slate-950 p-2 rounded break-all mt-1 border border-gray-200 dark:border-transparent">IV: {image.duress_iv}</div>
                     </div>
                   </div>
                 )}
@@ -183,26 +183,26 @@ export default function Vault() {
       {/* Share Modal (Only rendered when needed) */}
       {shareModalOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-md p-6 shadow-2xl animate-fade-in">
+          <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl w-full max-w-md p-6 shadow-2xl animate-fade-in">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold text-white flex items-center gap-2"><Share2 className="w-5 h-5 text-indigo-400" /> Share Access</h3>
-              <button onClick={() => setShareModalOpen(null)}><X className="w-5 h-5 text-slate-400" /></button>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2"><Share2 className="w-5 h-5 text-indigo-500 dark:text-indigo-400" /> Share Access</h3>
+              <button onClick={() => setShareModalOpen(null)}><X className="w-5 h-5 text-gray-500 dark:text-slate-400" /></button>
             </div>
 
             <div className="space-y-4">
               <div className="flex gap-2">
-                <input type="email" value={emailInput} onChange={(e) => setEmailInput(e.target.value)} className="flex-1 bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white text-sm" placeholder="Add email to allowlist..." />
+                <input type="email" value={emailInput} onChange={(e) => setEmailInput(e.target.value)} className="flex-1 bg-gray-50 dark:bg-slate-900 border border-gray-300 dark:border-slate-600 rounded-lg px-4 py-2 text-gray-900 dark:text-white text-sm outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Add email to allowlist..." />
                 <button onClick={addEmail} className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg"><Plus className="w-5 h-5" /></button>
               </div>
 
               <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
                 {allowedEmails.map(email => (
-                  <div key={email} className="flex justify-between items-center bg-slate-900/50 p-3 rounded-lg border border-slate-700">
-                    <span className="text-sm text-slate-300">{email}</span>
-                    <button onClick={() => removeEmail(email)} className="text-red-400 hover:text-red-300"><Trash2 className="w-4 h-4" /></button>
+                  <div key={email} className="flex justify-between items-center bg-gray-50 dark:bg-slate-900/50 p-3 rounded-lg border border-gray-200 dark:border-slate-700">
+                    <span className="text-sm text-gray-700 dark:text-slate-300">{email}</span>
+                    <button onClick={() => removeEmail(email)} className="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300"><Trash2 className="w-4 h-4" /></button>
                   </div>
                 ))}
-                {allowedEmails.length === 0 && <p className="text-center text-slate-500 text-sm py-4">File is private.</p>}
+                {allowedEmails.length === 0 && <p className="text-center text-gray-500 dark:text-slate-500 text-sm py-4">File is private.</p>}
               </div>
 
               <button onClick={copyShareLink} className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-medium flex justify-center items-center gap-2 mt-4">
