@@ -97,6 +97,38 @@ export default function Vault() {
     }
   };
 
+  // --- DELETE FUNCTIONALITY (Removes from DB + Storage) ---
+  const handleDelete = async (image: StegoImage) => {
+    if (!confirm('Are you sure you want to permanently DELETE this file? This cannot be undone.')) return;
+
+    try {
+      // 1. Remove from Storage Bucket
+      const { error: storageError } = await supabase.storage
+        .from('stego-images')
+        .remove([image.storage_path]);
+
+      if (storageError) {
+        console.error('Storage delete warning:', storageError);
+        // We continue to delete the DB record even if storage fails (e.g., file already missing)
+      }
+
+      // 2. Remove from Database
+      const { error: dbError } = await supabase
+        .from('stego_images')
+        .delete()
+        .eq('id', image.id);
+
+      if (dbError) throw dbError;
+
+      // 3. Update Local State
+      setMyImages(myImages.filter((img) => img.id !== image.id));
+
+    } catch (err) {
+      console.error('Error deleting image:', err);
+      alert('Failed to delete image');
+    }
+  };
+
   // --- Share Logic ---
   const openShareModal = async (image: StegoImage) => {
     setShareModalOpen(image.id);
@@ -182,6 +214,13 @@ export default function Vault() {
                         title="Remote Kill Switch (Burn File)"
                       >
                         <Flame className="w-4 h-4 group-hover:animate-pulse" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(image)}
+                        className="p-2 bg-slate-700 hover:bg-red-900 text-slate-300 hover:text-white rounded-lg transition-all"
+                        title="Delete Permanently"
+                      >
+                        <Trash2 className="w-5 h-5" />
                       </button>
                     </>
                   )}

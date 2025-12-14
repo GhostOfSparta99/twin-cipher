@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Shield, Upload, Download, FolderLock, LogOut, Menu, X, Wrench } from 'lucide-react';
+import { Shield, Upload, Download, FolderLock, LogOut, Menu, X, Wrench, MessageSquare } from 'lucide-react';
 import UnifiedEmbed from './UnifiedEmbed';
 import UnifiedExtract from './UnifiedExtract';
 import Vault from './Vault';
 import Tools from './Tools';
 import ThemeToggle from './ThemeToggle';
+import Chat from './Chat';
 
-type Tab = 'embed' | 'extract' | 'vault' | 'tools';
+type Tab = 'embed' | 'extract' | 'vault' | 'tools' | 'chat';
 
 // FIX: Define full class strings explicitly so Tailwind doesn't purge them
 const TAB_VARIANTS = {
@@ -26,6 +27,10 @@ const TAB_VARIANTS = {
   amber: {
     active: 'bg-white dark:bg-amber-600 border-amber-200 dark:border-amber-500 text-amber-600 dark:text-white shadow-amber-500/10',
     inactive: 'hover:text-amber-500 dark:hover:text-amber-400'
+  },
+  pink: {
+    active: 'bg-white dark:bg-pink-600 border-pink-200 dark:border-pink-500 text-pink-600 dark:text-white shadow-pink-500/10',
+    inactive: 'hover:text-pink-500 dark:hover:text-pink-400'
   }
 };
 
@@ -116,6 +121,7 @@ export default function Dashboard() {
           <TabButton id="extract" icon={Download} label="Extract Files" color="emerald" />
           <TabButton id="vault" icon={FolderLock} label="My Vault" color="violet" />
           <TabButton id="tools" icon={Wrench} label="Tools" color="amber" />
+          <TabButton id="chat" icon={MessageSquare} label="Messages" color="pink" />
         </div>
 
         <div className="animate-fade-in">
@@ -123,6 +129,7 @@ export default function Dashboard() {
           {activeTab === 'extract' && <UnifiedExtract />}
           {activeTab === 'vault' && <Vault />}
           {activeTab === 'tools' && <Tools />}
+          {activeTab === 'chat' && <Chat />}
         </div>
       </main>
     </div>
