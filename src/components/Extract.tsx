@@ -27,6 +27,10 @@ export default function Extract() {
 
       if (dbErr || !meta) throw new Error('Security metadata not found. File may be compromised or deleted.');
 
+      if (meta.real_salt === 'BURNED' || meta.real_iv === 'BURNED') {
+        throw new Error("File Corrupted. The integrity of this file has been compromised (Remote Wipe detected).");
+      }
+
       // 3. Try Real Password
       try {
         const decrypted = await decryptData(realFile.data, password, base64ToUint8Array(meta.real_salt), base64ToUint8Array(meta.real_iv));
